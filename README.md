@@ -16,12 +16,16 @@ Basic usage
 ---
 
 ```
-deluge = require('deluge')(delugeUrl, password);
+var deluge = require('deluge')(delugeUrl, password, url_user, url_password);
 ```
 
 **delugeUrl** is the address of your deluge-web server with "json" appended. ex http://192.168.0.100:8112/json
 
 **password** is the password of your deluge-web server - default "deluge".
+
+**url_user** is the password of your delugeurl - default "".
+
+**url_password** is the password of your delugeurl - default "".
 
 ## Callback
 Basic callback expected:
@@ -29,7 +33,8 @@ Basic callback expected:
 var callback = function(error, result) {
     if(error) {
         console.error(error);
-        return;
+    } else {
+        console.log(result);
     }
 }
 ```

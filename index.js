@@ -1,11 +1,8 @@
 (function () {
     'use strict';
-    var fs = require('fs');
-    var path = require('path');
     var restler = require('restler');
     var validUrl = require('valid-url');
 
-    var connected = false;
     var isAuthentificated = false;
 
     var msgId = 0;
@@ -13,11 +10,15 @@
     var PASSWORD,
         DELUGE_URL,
         SESSION_COOKIE = '',
+        URL_USER,
+        URL_PASSWORD,
         COOKIE_JAR = {};
 
-    module.exports = function (deluge_url, password) {
+    module.exports = function (deluge_url, password, url_user, url_pass) {
         DELUGE_URL = deluge_url;
         PASSWORD = password;
+        URL_USER = url_user,
+        URL_PASSWORD = url_pass;
         return {
             /**
              * Add the torrent to Deluge
@@ -28,7 +29,7 @@
             add: function (magnet, dlPath, callback) {
                 executeApiCall(function () {
                     add(magnet, dlPath, callback);
-                })
+                });
             },
             /**
              * Get the list of all the hosts that the WebUI can connect to
@@ -37,7 +38,7 @@
             getHosts: function (callback) {
                 executeApiCall(function () {
                     getHostList(callback);
-                }, false)
+                }, false);
             },
             /**
              * Connect the WebUI to the wanted daemon
@@ -47,13 +48,13 @@
             connect: function (hostID, callback) {
                 executeApiCall(function () {
                     connectToDaemon(hostID, callback);
-                }, false)
+                }, false);
             },
 
             isConnected: function(callback) {
                 executeApiCall(function () {
                     isConnected(callback);
-                }, false)
+                }, false);
             },
 
             /**
@@ -72,9 +73,9 @@
             getTorrentRecord: function (callback) {
                 executeApiCall(function () {
                     getTorrentRecord(callback);
-                })
+                });
             }
-        }
+        };
     };
 
     function setCookies(cookies, callback) {
@@ -110,7 +111,7 @@
                 else {
                     callback(null, isAuthentificated);
                 }
-            })
+            });
         } else {
             reAuth();
         }
@@ -142,6 +143,13 @@
         });
     }
 
+    function auth(callback) {
+        post({
+            params: [PASSWORD],
+            method: 'auth.login'
+        }, callback);
+    }
+
     function checkSession(callback) {
         post({
             params: [SESSION_COOKIE],
@@ -152,12 +160,6 @@
         });
     }
 
-    function auth(callback) {
-        post({
-            params: [PASSWORD],
-            method: 'auth.login'
-        }, callback);
-    }
 
     function isConnected(callback) {
         post({
@@ -226,7 +228,7 @@
                 }
                 addTorrent(result, dlPath, callback);
 
-            })
+            });
         } else {
             addTorrent(torrent, dlPath, callback);
         }
@@ -259,6 +261,8 @@
             msgId = 0;
         }
         restler.postJson(DELUGE_URL, body, {
+            username : URL_USER, 
+            password: URL_PASSWORD,
             headers: {
                 'Cookie': SESSION_COOKIE
             }
@@ -287,6 +291,7 @@
                 callback(error);
                 return;
             }
+            console.log(result);
             var hosts = [];
             result.forEach(function (element, index) {
                 hosts[index] = {id: element[0], ip: element[1], port: element[2], status: element[3]};
