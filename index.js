@@ -56,6 +56,86 @@
                     isConnected(callback);
                 }, false);
             },
+            listMethods: function(callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'system.listMethods',
+                        params: []
+                    }, callback);
+                }, false);
+            },
+            pauseAll: function(callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.pause_all_torrents',
+                        params: []
+                    }, callback);
+                }, false);
+            },
+            resumeAll: function(callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.resume_all_torrents',
+                        params: []
+                    }, callback);
+                }, false);
+            },
+            pause: function(torrentId, callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.pause_torrent',
+                        params: [[torrentId]]
+                    }, callback);
+                }, false);
+            },
+            resume: function(torrentId, callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.resume_torrent',
+                        params: [[torrentId]]
+                    }, callback);
+                }, false);
+            },
+            getTorrentStatus: function(torrentId, callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.get_torrent_status',
+                        params: [torrentId, [
+                                'queue',
+                                'name',
+                                'total_wanted',
+                                'state',
+                                'progress',
+                                'num_seeds',
+                                'total_seeds',
+                                'num_peers',
+                                'total_peers',
+                                'download_payload_rate',
+                                'upload_payload_rate',
+                                'eta',
+                                'ratio',
+                                'distributed_copies',
+                                'is_auto_managed',
+                                'time_added',
+                                'tracker_host',
+                                'save_path',
+                                'total_done',
+                                'total_uploaded',
+                                'max_download_speed',
+                                'max_upload_speed',
+                                'seeds_peers_ratio'
+                                ]]
+                    }, callback);
+                }, false);
+            },
+            getTorrentIds: function(callback) {
+                executeApiCall(function () {
+                    post({
+                        method: 'core.get_session_state',
+                        params: []
+                    }, callback);
+                }, false);
+            },
 
             /**
              * Set cookies in COOKIE_JAR, cookies is an object with urls as keys, example:
